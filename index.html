@@ -369,14 +369,80 @@
         body:has(#sunshine.page.active) .navbar:hover {
             opacity: 1;
         }
+        textarea {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #999;
+            border-radius: 0px;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            background: #fff;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border: 1px solid #666;
+            box-shadow: inset 0px 0px 2px rgba(0,0,0,0.2);
+        }
+
+        .donation-form {
+            margin-top: 15px;
+        }
+
+        .donate-btn {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            border: 1px solid #1e8449;
+            margin-top: 10px;
+        }
+
+        .donate-btn:hover {
+            background: #229954;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        #donationStatus {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        #donationStatus.success {
+            color: #27ae60;
+        }
+
+        #donationStatus.error {
+            color: #e74c3c;
+        }
+        #card-element {
+            border: 1px solid #999;
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 0px;
+            background: white;
+        }
+
+        #card-errors {
+            margin: 10px 0;
+            display: none;
+        }
+
+        #card-errors.show {
+            display: block;
+        }
 
     </style>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <!-- Navbar -->
     <div class="navbar">
         <button class="nav-btn active" onclick="switchPage('calculator', event)">LeCalculator</button>
         <button class="nav-btn" onclick="switchPage('sunshine', event)">Sunshine 🫶</button>
+        <button class="nav-btn" onclick="switchPage('donate', event)">Donate 💰</button>
     </div>
 
     <!-- LeCalculator Page -->
@@ -490,12 +556,152 @@
         <p>Bask in the glory of our glorious king</p>
     </div>
 
+    <!-- Donate Page -->
+    <div id="donate" class="page">
+        <div class="container">
+            <h1>💰 Donate to the Church of LeBron 🫶</h1>
+            <p class="subtitle">Support the holy mission of our glorious King</p>
+
+            <div class="info-box">
+                Help us spread the glory of LeBron James across the world. Your donations fuel our sacred mission! 👑
+            </div>
+
+            <div class="donation-form">
+                <div class="form-group">
+                    <label for="donorName">Your Name</label>
+                    <input type="text" id="donorName" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="donorEmail">Your Email</label>
+                    <input type="email" id="donorEmail" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="donationAmount">Donation Amount ($)</label>
+                    <input type="number" id="donationAmount" placeholder="Enter amount" min="1" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="donationMessage">Message (Optional)</label>
+                    <textarea id="donationMessage" placeholder="Share why you're supporting LeBron's mission!" rows="3"></textarea>
+                </div>
+
+                <div id="card-element"></div>
+                <div id="card-errors" class="error"></div>
+
+                <button class="donate-btn" onclick="processDonation()">Donate Now 🙏</button>
+                <div id="donationStatus"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Initialize Stripe
+        const stripe = Stripe('pk_test_51SRay7FaQ2JnmmbYZQh6vbBR7fo0MhOJVIqey7kXn2btpupwVxkhdRvgSKGrekuYLFZlZJ1rIdT2TKsBuA5hWxmm00uHCHJGCh'); // Replace with your actual publishable key
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+
+        // Mount card element when donate page loads
+        function initializeCard() {
+            if (document.getElementById('card-element').children.length === 0) {
+                cardElement.mount('#card-element');
+            }
+        }
+
+        async function processDonation() {
+            const name = document.getElementById('donorName').value;
+            const email = document.getElementById('donorEmail').value;
+            const amount = document.getElementById('donationAmount').value;
+            const message = document.getElementById('donationMessage').value;
+            const statusEl = document.getElementById('donationStatus');
+            const errorEl = document.getElementById('card-errors');
+
+            // Validation
+            if (!name || !email || !amount) {
+                statusEl.textContent = '❌ Please fill in all required fields';
+                statusEl.className = 'error';
+                return;
+            }
+
+            if (amount < 1) {
+                statusEl.textContent = '❌ Donation amount must be at least $1';
+                statusEl.className = 'error';
+                return;
+            }
+
+            errorEl.classList.remove('show');
+            statusEl.textContent = '⏳ Processing your donation...';
+            statusEl.className = '';
+
+            // Create payment method
+            const { error, paymentMethod } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+                billing_details: {
+                    name: name,
+                    email: email
+                }
+            });
+
+            if (error) {
+                errorEl.textContent = `❌ ${error.message}`;
+                errorEl.classList.add('show');
+                statusEl.textContent = '';
+                return;
+            }
+
+            // Send to your backend
+            try {
+                const response = await fetch('/process-donation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount) * 100, // Stripe uses cents
+                        paymentMethodId: paymentMethod.id,
+                        name: name,
+                        email: email,
+                        message: message
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusEl.innerHTML = `
+                        ✅ Thank you for your donation, ${name}!<br>
+                        Amount: $${parseFloat(amount).toFixed(2)}<br>
+                        <small style="color: #666; margin-top: 5px; display: block;">
+                        Your donation has been processed successfully. Bless you! 🙏
+                        </small>
+                    `;
+                    statusEl.className = 'success';
+
+                    // Clear form after 3 seconds
+                    setTimeout(() => {
+                        document.getElementById('donorName').value = '';
+                        document.getElementById('donorEmail').value = '';
+                        document.getElementById('donationAmount').value = '';
+                        document.getElementById('donationMessage').value = '';
+                        cardElement.clear();
+                    }, 3000);
+                } else {
+                    errorEl.textContent = `❌ ${result.error}`;
+                    errorEl.classList.add('show');
+                    statusEl.textContent = '';
+                }
+            } catch (error) {
+                errorEl.textContent = `❌ Error processing donation: ${error.message}`;
+                errorEl.classList.add('show');
+                statusEl.textContent = '';
+            }
+        }
         const LEBRON_BIRTH = new Date(1984, 11, 30);
         let currentMode = 'age';
         let currentPage = 'calculator';
         let updateInterval = null;
-
         function switchPage(page, event) {
             currentPage = page;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -510,6 +716,11 @@
                 // Auto play audio
                 const audio = document.querySelector('audio');
                 audio.play();
+            } else if (page === 'donate') {
+                document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('glorious_pookie_James.png')";
+                document.getElementById('sunshineFooter').classList.remove('show');
+                // Initialize Stripe card element
+                initializeCard();
             } else {
                 document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('glorious_pookie_James.png')";
                 document.getElementById('sunshineFooter').classList.remove('show');
@@ -767,6 +978,53 @@ function switchMode(mode) {
                 document.getElementById('birthdayInput').classList.add('hidden-input');
             }
         });
+
+        function processDonation() {
+            const name = document.getElementById('donorName').value;
+            const email = document.getElementById('donorEmail').value;
+            const amount = document.getElementById('donationAmount').value;
+            const message = document.getElementById('donationMessage').value;
+            const statusEl = document.getElementById('donationStatus');
+
+            // Validation
+            if (!name || !email || !amount) {
+                statusEl.textContent = '❌ Please fill in all required fields';
+                statusEl.className = 'error';
+                return;
+            }
+
+            if (amount < 1) {
+                statusEl.textContent = '❌ Donation amount must be at least $1';
+                statusEl.className = 'error';
+                return;
+            }
+
+            // Show processing message
+            statusEl.textContent = '⏳ Processing your donation...';
+            statusEl.className = '';
+
+            // For now, show a success message and donation details
+            // In production, you would integrate with Stripe or PayPal
+            setTimeout(() => {
+                statusEl.innerHTML = `
+                    ✅ Thank you for your donation, ${name}!<br>
+                    Amount: $${parseFloat(amount).toFixed(2)}<br>
+                    <small style="color: #666; margin-top: 5px; display: block;">
+                    To complete your donation, please set up a payment processor like Stripe or PayPal.
+                    </small>
+                `;
+                statusEl.className = 'success';
+
+                // Clear form after 2 seconds
+                setTimeout(() => {
+                    document.getElementById('donorName').value = '';
+                    document.getElementById('donorEmail').value = '';
+                    document.getElementById('donationAmount').value = '';
+                    document.getElementById('donationMessage').value = '';
+                }, 2000);
+            }, 1000);
+        }
+
     </script>
 </body>
 </html>
