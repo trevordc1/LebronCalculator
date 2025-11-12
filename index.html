@@ -369,6 +369,26 @@
         body:has(#sunshine.page.active) .navbar:hover {
             opacity: 1;
         }
+
+
+
+        #sunshine .youtube-container {
+            position: fixed;
+            bottom: 400px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -2;
+            width: 90%;
+            max-width: 560px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #sunshine .youtube-container:hover {
+            opacity: 1;
+        }
+
+
         textarea {
             width: 100%;
             padding: 6px;
@@ -575,11 +595,8 @@
     <div id="sunshine" class="page">
         <img src="LePookie_My_Sunshine.png" alt="Our Glorious King" class="sunshine-image">
         
-        <div class="audio-player">
-            <audio controls loop>
-                <source src="sunshine.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
+        <div class="youtube-container">
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/lIsTm0lGzY4?autoplay=1&loop=1&playlist=lIsTm0lGzY4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
     </div>
     <!-- Sunshine Footer -->
@@ -626,6 +643,9 @@
                 <div id="donationStatus"></div>
             </div>
             <div style="border-top: 2px solid #000; margin: 30px 0; padding-top: 20px; text-align: center; color: #666; font-size: 12px;">
+                ***Donations are done under a sandboxed stripe environment and will only work with the test card number - 4242 4242 4242 4242.
+                <br>
+                Real credit cards will not work and this site will not accept real money.***
             </div>
         </div>
     </div>
@@ -731,7 +751,7 @@
                     document.getElementById('donorEmail').value = '';
                     document.getElementById('donationAmount').value = '';
                     document.getElementById('donationMessage').value = '';
-                    cardElement.clear();
+                   cardElement.clear();
                 }, 3000);
             } else {
                 errorEl.textContent = `❌ ${result.error}`;
@@ -758,9 +778,16 @@
             event.target.classList.add('active');
 
             const disclaimerFooter = document.getElementById('disclaimerFooter');
+            const youtubeIframe = document.querySelector('#sunshine .youtube-container iframe');
+
             if (page === 'calculator' || page === 'donate') {
                     disclaimerFooter.classList.add('show');
                     document.body.classList.add('disclaimer-active');
+                    if (youtubeIframe) 
+                    {
+                        youtubeIframe.src = youtubeIframe.src.split('?')[0] + '?autoplay=0&mute=1&loop=1&playlist=lIsTm0lGzY4';
+                    }
+
                 } else {
                     disclaimerFooter.classList.remove('show');
                     document.body.classList.remove('disclaimer-active');
@@ -770,6 +797,11 @@
             if (page === 'sunshine') {
                 document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('LePookie_My_Sunshine.png')";
                 document.getElementById('sunshineFooter').classList.add('show');
+
+                if (youtubeIframe) 
+                {
+                    youtubeIframe.src = 'https://www.youtube.com/embed/lIsTm0lGzY4?autoplay=1&loop=1&playlist=lIsTm0lGzY4';
+                }
                 // Auto play audio
                 const audio = document.querySelector('audio');
                 audio.play();
