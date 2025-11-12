@@ -433,6 +433,29 @@
         #card-errors.show {
             display: block;
         }
+        .disclaimer-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #fff3cd;
+                border-top: 1px solid #ffc107;
+                padding: 10px;
+                text-align: center;
+                font-size: 11px;
+                color: #856404;
+                display: none;
+                z-index: 5;
+            }
+
+            .disclaimer-footer.show {
+                display: block;
+            }
+
+            /* Add padding to body when disclaimer shows */
+            body.disclaimer-active {
+                padding-bottom: 60px;
+            }
 
     </style>
     <script src="https://js.stripe.com/v3/"></script>
@@ -445,6 +468,7 @@
             });
     </script>
 </head>
+
 <body>
     <!-- Navbar -->
     <div class="navbar">
@@ -602,9 +626,6 @@
                 <div id="donationStatus"></div>
             </div>
             <div style="border-top: 2px solid #000; margin: 30px 0; padding-top: 20px; text-align: center; color: #666; font-size: 12px;">
-                Or Donate
-                With Ko-Fi
-            <iframe id='kofiframe' src='https://ko-fi.com/lecalc/?hidefeed=true&widget=true&embed=true&preview=true' style='border:none;width:100%;padding:4px;margin-top:30px;background:#f9f9f9;' height='712' title='lecalc'></iframe>
             </div>
         </div>
     </div>
@@ -728,12 +749,22 @@
         let currentMode = 'age';
         let currentPage = 'calculator';
         let updateInterval = null;
+
         function switchPage(page, event) {
             currentPage = page;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
+
+            const disclaimerFooter = document.getElementById('disclaimerFooter');
+            if (page === 'calculator' || page === 'donate') {
+                    disclaimerFooter.classList.add('show');
+                    document.body.classList.add('disclaimer-active');
+                } else {
+                    disclaimerFooter.classList.remove('show');
+                    document.body.classList.remove('disclaimer-active');
+                }
 
             // Change background based on page
             if (page === 'sunshine') {
@@ -1008,13 +1039,8 @@ function switchMode(mode) {
 
     </script>
 
-    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
-    <script>
-      kofiWidgetOverlay.draw('lecalc', {
-        'type': 'floating-chat',
-        'floating-chat.donateButton.text': 'Support me',
-        'floating-chat.donateButton.background-color': '#27ae60'
-      });
-    </script>
+    <div id="disclaimerFooter" class="disclaimer-footer">
+        <strong>⚠️ Disclaimer:</strong> This is an unofficial fan site. Not affiliated with, endorsed by, or associated with LeBron James or the NBA.
+    </div>
 </body>
 </html>

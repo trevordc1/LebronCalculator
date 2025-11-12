@@ -1,0 +1,246 @@
+
+        .donation-form {
+            margin-top: 15px;
+        }
+
+        .donate-btn {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            border: 1px solid #1e8449;
+            margin-top: 10px;
+        }
+
+        .donate-btn:hover {
+            background: #229954;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        #donationStatus {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        #donationStatus.success {
+            color: #27ae60;
+        }
+
+        #donationStatus.error {
+            color: #e74c3c;
+        }
+
+
+
+<!-- Navbar -->
+<button class="nav-btn" onclick="switchPage('donate', event)">Donate 💰</button>
+
+
+
+    <!-- Donate Page -->
+    <div id="donate" class="page">
+        <div class="container">
+            <h1>💰 Donate to my Church for LeHunky 🫶</h1>
+            <p class="subtitle">Support the holy mission of our glorious King</p>
+
+            <div class="info-box">
+                Help us spread the glory of LeBron James across the world. Your donations fuel our sacred mission! 👑
+            </div>
+
+            <div class="donation-form">
+                <div class="form-group">
+                    <label for="donorName">Your Name</label>
+                    <input type="text" id="donorName" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="donorEmail">Your Email</label>
+                    <input type="email" id="donorEmail" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="donationAmount">Donation Amount ($)</label>
+                    <input type="number" id="donationAmount" placeholder="Enter amount" min="1" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="donationMessage">Message (Optional)</label>
+                    <textarea id="donationMessage" placeholder="Share why you're supporting LeBron's mission!" rows="3"></textarea>
+                </div>
+
+                <div id="card-element"></div>
+                <div id="card-errors" class="error"></div>
+
+                <button class="donate-btn" onclick="processDonation()">Donate Now 🙏</button>
+                <div id="donationStatus"></div>
+            </div>
+            <div style="border-top: 2px solid #000; margin: 30px 0; padding-top: 20px; text-align: center; color: #666; font-size: 12px;">
+                Or Donate
+                With Ko-Fi
+            <iframe id='kofiframe' src='https://ko-fi.com/lecalc/?hidefeed=true&widget=true&embed=true&preview=true' style='border:none;width:100%;padding:4px;margin-top:30px;background:#f9f9f9;' height='712' title='lecalc'></iframe>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+
+
+   <script>
+        // Fetch Stripe publishable key from backend
+        fetch('/api/config')
+            .then(r => r.json())
+            .then(data => {
+                window.STRIPE_PUBLISHABLE_KEY = data.stripePublishableKey;
+            });
+    </script>
+
+
+    // Wait for the key to be loaded, then initialize Stripe
+    let stripe, elements, cardElement;
+    
+    const initStripe = setInterval(() => {
+        if (window.STRIPE_PUBLISHABLE_KEY) {
+            clearInterval(initStripe);
+            stripe = Stripe(window.STRIPE_PUBLISHABLE_KEY);
+            elements = stripe.elements();
+            cardElement = elements.create('card');
+        }
+    }, 100);
+
+    // Mount card element when donate page loads
+    function initializeCard() {
+        if (cardElement && document.getElementById('card-element').children.length === 0) {
+            cardElement.mount('#card-element');
+        }
+    }
+
+    async function processDonation() {
+        const name = document.getElementById('donorName').value;
+        const email = document.getElementById('donorEmail').value;
+        const amount = document.getElementById('donationAmount').value;
+        const message = document.getElementById('donationMessage').value;
+        const statusEl = document.getElementById('donationStatus');
+        const errorEl = document.getElementById('card-errors');
+
+        // Validation
+        if (!name || !email || !amount) {
+            statusEl.textContent = '❌ Please fill in all required fields';
+            statusEl.className = 'error';
+            return;
+        }
+
+        if (amount < 1) {
+            statusEl.textContent = '❌ Donation amount must be at least $1';
+            statusEl.className = 'error';
+            return;
+        }
+
+        if (!stripe) {
+            statusEl.textContent = '❌ Payment system loading... please wait';
+            statusEl.className = 'error';
+            return;
+        }
+
+        errorEl.classList.remove('show');
+        statusEl.textContent = '⏳ Processing your donation...';
+        statusEl.className = '';
+
+        // Create payment method
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
+            billing_details: {
+                name: name,
+                email: email
+            }
+        });
+
+        if (error) {
+            errorEl.textContent = `❌ ${error.message}`;
+            errorEl.classList.add('show');
+            statusEl.textContent = '';
+            return;
+        }
+
+        // Send to your backend
+        try {
+            const response = await fetch('/api/process-donation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: parseFloat(amount) * 100,
+                    paymentMethodId: paymentMethod.id,
+                    name: name,
+                    email: email,
+                    message: message
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                statusEl.innerHTML = `
+                    ✅ Thank you for your donation, ${name}!<br>
+                    Amount: $${parseFloat(amount).toFixed(2)}<br>
+                    <small style="color: #666; margin-top: 5px; display: block;">
+                    Your donation has been processed successfully. Bless you! 🙏
+                    </small>
+                `;
+                statusEl.className = 'success';
+
+                setTimeout(() => {
+                    document.getElementById('donorName').value = '';
+                    document.getElementById('donorEmail').value = '';
+                    document.getElementById('donationAmount').value = '';
+                    document.getElementById('donationMessage').value = '';
+                    cardElement.clear();
+                }, 3000);
+            } else {
+                errorEl.textContent = `❌ ${result.error}`;
+                errorEl.classList.add('show');
+                statusEl.textContent = '';
+            }
+        } catch (error) {
+            errorEl.textContent = `❌ Error processing donation: ${error.message}`;
+            errorEl.classList.add('show');
+            statusEl.textContent = '';
+        }
+    }
+
+
+
+
+                // Initialize Stripe card element
+                initializeCard();
+
+
+
+    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+
+
+
+    <script>
+      kofiWidgetOverlay.draw('lecalc', {
+        'type': 'floating-chat',
+        'floating-chat.donateButton.text': 'Support me',
+        'floating-chat.donateButton.background-color': '#27ae60'
+      });
+    </script>
+
+
+
+            if (page === 'calculator' || page === 'donate') {
+                    disclaimerFooter.classList.add('show');
+                    document.body.classList.add('disclaimer-active');
+                } else {
+                    disclaimerFooter.classList.remove('show');
+                    document.body.classList.remove('disclaimer-active');
+                }
