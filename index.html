@@ -34,7 +34,7 @@
             padding: 10px 20px;
             border: 1px solid #666;
             border-radius: 0px;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             background: #ddd;
@@ -79,7 +79,7 @@
             text-align: center;
             color: #000;
             margin-bottom: 2px;
-            font-size: 18px;
+            font-size: 21px;
             font-weight: 900;
             font-family: Arial, sans-serif;
             letter-spacing: 1px;
@@ -90,7 +90,7 @@
             text-align: center;
             color: #555;
             margin-bottom: 10px;
-            font-size: 10px;
+            font-size: 13px;
             font-family: Arial, sans-serif;
         }
 
@@ -105,7 +105,7 @@
             padding: 6px;
             border: 1px solid #666;
             border-radius: 0px;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             transition: none;
@@ -131,7 +131,7 @@
             padding: 8px;
             margin-bottom: 8px;
             border-radius: 0px;
-            font-size: 14px;
+            font-size: 16px;
             color: #333;
             font-family: Arial, sans-serif;
             border: 1px solid #999;
@@ -146,7 +146,7 @@
             margin-bottom: 6px;
             color: #333;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 15px;
         }
 
         input {
@@ -177,7 +177,7 @@
             padding: 8px;
             border: 1px solid #666;
             border-radius: 0px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             transition: none;
@@ -225,21 +225,21 @@
             font-weight: 700;
             color: #000;
             margin-bottom: 2px;
-            font-size: 11px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0px;
             font-family: Arial, sans-serif;
         }
 
         .result-value {
-            font-size: 14px;
+            font-size: 16px;
             color: #000;
             font-weight: 700;
             font-family: Arial, sans-serif;
         }
 
         .comparison {
-            font-size: 16px;
+            font-size: 18px;
             color: #555;
             margin-top: 8px;
         }
@@ -477,24 +477,40 @@
             padding-bottom: 60px;
         }
 
+        #boyoh.page {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #boyoh.page .boyoh-wrapper {
+            width: 100%;
+            margin: 0;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
         .boyoh-container {
             display: flex;
             gap: 20px;
-            max-width: 1200px;
-            width: 100%;
+            flex: 2;
             background: #f5f5f5;
             padding: 20px;
             border-radius: 0px;
             border: 2px solid #999;
             filter: contrast(1.1) brightness(0.95);
+            align-items: flex-start;
         }
 
         .boyoh-column {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 0;
             flex: 1;
             min-width: 100px;
+            padding: 0;
+            margin: 0;
         }
 
         .boyoh-column img {
@@ -502,6 +518,9 @@
             height: auto;
             border: 1px solid #999;
             border-radius: 0px;
+            display: block;
+            margin: 0;
+            padding: 0;
         }
 
         .boyoh-center {
@@ -521,15 +540,12 @@
 
         .boyoh-text {
             text-align: center;
-            font-size: 13px;
+            font-size: 17px;
             line-height: 1.6;
             color: #333;
             font-family: Arial, sans-serif;
         }
 
-        #boyoh {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('glorious_pookie_James.png');
-        }
 
 </style>
 <script src="https://js.stripe.com/v3/"></script>
@@ -606,6 +622,13 @@
                     <div class="result-value comparison" id="ageDiff">--</div>
                 </div>
 
+                <div class="divider" id="divider2"></div>
+
+                <div class="result-section" id="leYearSection">
+                    <div class="result-title">Year of Birth (Le Calendar)</div>
+                    <div class="result-value" id="leYearDisplay">--</div>
+                </div>
+
                 <div id="birthdayResults">
                     <div class="divider"></div>
 
@@ -638,7 +661,7 @@
                     <div class="result-section">
                         <div class="result-title">LeEpoch - Seconds Since Our Glorious King's Birth</div>
                         <div class="result-value" id="epochCounter">--</div>
-                        <div style="font-size: 12px; color: #999; margin-top: 10px;">Updating in real-time 🫶</div>
+                        <div style="font-size: 15px; color: #999; margin-top: 10px;">Updating in real-time 🫶</div>
                     </div>
                 </div>
             </div>
@@ -862,11 +885,17 @@
                 audio.play();
             } else if (page === 'donate') {
                 document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('glorious_pookie_James.png')";
+                document.body.style.backgroundSize = "38%";
+                document.body.style.backgroundPosition = "center 15%";
+                document.body.style.backgroundAttachment = "fixed";
                 document.getElementById('sunshineFooter').classList.remove('show');
                 // Initialize Stripe card element
                 initializeCard();
             } else if (page === 'boyoh') {
-                document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('glorious_pookie_James.png')";
+                document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('leBent.png')";
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundPosition = "center";
+                document.body.style.backgroundAttachment = "fixed";
                 document.getElementById('sunshineFooter').classList.remove('show');
                 // Stop audio
                 const audio = document.querySelector('audio');
@@ -875,6 +904,9 @@
             }
             else {
                 document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('glorious_pookie_James.png')";
+                document.body.style.backgroundSize = "38%";
+                document.body.style.backgroundPosition = "center 15%";
+                document.body.style.backgroundAttachment = "fixed";
                 document.getElementById('sunshineFooter').classList.remove('show');
                 // Stop audio
                 const audio = document.querySelector('audio');
@@ -982,6 +1014,11 @@ function switchMode(mode) {
             document.getElementById('birthdayResults').classList.remove('hidden-input');
             document.getElementById('ageResults').classList.add('hidden-input');
             document.getElementById('epochResults').classList.add('hidden-input');
+            // Calculate LE year
+            const leYear = calculateLeYearFromDate(birthDate);
+            document.getElementById('leYearDisplay').textContent = leYear;
+            document.getElementById('leYearSection').classList.remove('hidden-input');
+            document.getElementById('divider2').classList.remove('hidden-input');
 
             updateSecondsInRealTime(secondsSinceLebron, secondsDifference);
         }
@@ -1033,9 +1070,71 @@ function switchMode(mode) {
             document.getElementById('ageResults').classList.remove('hidden-input');
             document.getElementById('epochResults').classList.add('hidden-input');
             document.getElementById('results').classList.add('show');
+            // Calculate LE year
+            const leYear = calculateLeYear(yourAge);
+            document.getElementById('leYearDisplay').textContent = leYear;
+            document.getElementById('leYearSection').classList.remove('hidden-input');
+            document.getElementById('divider2').classList.remove('hidden-input');
 
             if (updateInterval) clearInterval(updateInterval);
         }
+
+
+        function calculateLeYear(userAge) {
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
+            const currentDay = new Date().getDate();
+            
+            // Calculate birth year based on age
+            let birthYear = currentYear - userAge;
+            // Adjust if birthday hasn't happened yet this year
+            if (currentMonth < 11 || (currentMonth === 11 && currentDay < 30)) {
+                birthYear++;
+            }
+            
+            // Check if born in the "Year of Lebron" (1984 or 1985)
+            if (birthYear === 1984 || birthYear === 1985) {
+                return "Year of Lebron 👑";
+            } else if (birthYear > 1985) {
+                const yearsAfter = birthYear - 1985;
+                return `${yearsAfter} A.L. (After Lebron)`;
+            } else {
+                const yearsBefore = 1984 - birthYear;
+                return `${yearsBefore} B.L. (Before Lebron)`;
+            }
+        }
+
+
+function calculateLeYearFromDate(birthDate) {
+    const birthYear = birthDate.getFullYear();
+    const birthMonth = birthDate.getMonth();
+    const birthDay = birthDate.getDate();
+
+    // Lebron born: Dec 30, 1984
+    const lebronYear = 1984;
+    const lebronMonth = 11; // December (0-indexed)
+    const lebronDay = 30;
+
+    // Define Lebron's first year range
+    if (
+        (birthYear === 1984 && (birthMonth > 11 || (birthMonth === 11 && birthDay >= 30))) ||
+        (birthYear === 1985 && (birthMonth < 11 || (birthMonth === 11 && birthDay <= 30)))
+    ) {
+        return "Year of Lebron 👑";
+    }
+
+    // After Lebron
+    if (birthYear > 1985 || (birthYear === 1985 && (birthMonth > 11 || (birthMonth === 11 && birthDay > 30)))) {
+        let yearsAfter = birthYear - 1985;
+        if (birthMonth < 11 || (birthMonth === 11 && birthDay < 30)) yearsAfter--;
+        return `${yearsAfter + 1} A.L. (After Lebron)`;
+    }
+
+    // Before Lebron
+    let yearsBefore = 1984 - birthYear;
+    if (birthMonth > 11 || (birthMonth === 11 && birthDay > 30)) yearsBefore--;
+    return `${yearsBefore + 1} B.L. (Before Lebron)`;
+}
 
 
         function displayResults(yourAge, lebronAge, ageDifference, secondsSinceLebron, secondsDifference) {
@@ -1062,24 +1161,14 @@ function switchMode(mode) {
 
             document.getElementById('results').classList.add('show');
         }
-
         function updateSecondsInRealTime(initialLebronSeconds, initialDifference) {
             if (updateInterval) clearInterval(updateInterval);
             
             updateInterval = setInterval(() => {
                 const now = new Date();
                 const currentLebronSeconds = Math.floor((now - LEBRON_BIRTH) / 1000);
-                const currentDifference = initialDifference + (currentLebronSeconds - initialLebronSeconds);
 
                 document.getElementById('secondsSinceLebron').textContent = formatNumber(currentLebronSeconds);
-
-                if (currentDifference > 0) {
-                    document.getElementById('secondsDiff').innerHTML = `<span class="older">${formatNumber(currentDifference)} seconds older than LeGoat</span>`;
-                } else if (currentDifference < 0) {
-                    document.getElementById('secondsDiff').innerHTML = `<span class="younger">${formatNumber(Math.abs(currentDifference))} seconds younger than LeGoat</span>`;
-                } else {
-                    document.getElementById('secondsDiff').innerHTML = `<span>Same age in seconds!</span>`;
-                }
             }, 1000);
         }
 
@@ -1089,6 +1178,8 @@ function switchMode(mode) {
             document.getElementById('results').classList.remove('show');
             document.getElementById('error').classList.remove('show');
             document.getElementById('errorAge').classList.remove('show');
+            document.getElementById('leYearSection').classList.add('hidden-input');
+            document.getElementById('divider2').classList.add('hidden-input');
             if (updateInterval) clearInterval(updateInterval);
         }
 
@@ -1106,6 +1197,8 @@ function switchMode(mode) {
             document.getElementById('lebronAgeSection').classList.add('hidden-input');
             document.getElementById('ageDiffSection').classList.add('hidden-input');
             document.getElementById('divider1').classList.add('hidden-input');
+            document.getElementById('leYearSection').classList.add('hidden-input');
+            document.getElementById('divider2').classList.add('hidden-input');
             document.getElementById('birthdayResults').classList.add('hidden-input');
             document.getElementById('ageResults').classList.add('hidden-input');
             document.getElementById('epochResults').classList.remove('hidden-input');
@@ -1129,35 +1222,44 @@ function switchMode(mode) {
                 document.getElementById('ageInput').classList.remove('hidden-input');
                 document.getElementById('birthdayInput').classList.add('hidden-input');
             }
+            // Stop YouTube from autoplay on initial startup
+            const youtubeIframe = document.querySelector('#sunshine .youtube-container iframe');
+            if (youtubeIframe) {
+                youtubeIframe.src = youtubeIframe.src.split('?')[0] + '?autoplay=0&mute=1&loop=1&playlist=lIsTm0lGzY4';
+            }
         });
 
 
     </script>
+
     <!-- Boy oh boy Page -->
     <div id="boyoh" class="page">
-        <div class="boyoh-container">
-            <!-- Left Column -->
+        <div class="boyoh-wrapper">
             <div class="boyoh-column">
                 <!-- Add your images here -->
-                <img src="placeholder1.jpg" alt="LeBron moment">
-                <img src="placeholder2.jpg" alt="LeBron moment">
-                <img src="placeholder3.jpg" alt="LeBron moment">
+                <img src="lePresident.png" alt="LeBron moment">
+                <img src="leRef.png" alt="LeBron moment">
+                <img src="lePoolside.jpeg" alt="LeBron moment">
+                <img src="leChina.jpg" alt="LeBron moment">
+                <img src="LePookie_My_Sunshine.png" alt="LeBron moment">
             </div>
-
-            <!-- Center Column -->
-            <div class="boyoh-center">
-                <img src="lebon.jpeg" alt="Our Glorious King">
-                <p class="boyoh-text">
-                    Boy oh boy where do I even begin. Lebron... honey, my pookie bear. I have loved you ever since I first laid eyes on you. The way you drive into the paint and strike fear into your enemies eyes. Your silky smooth touch around the rim, and that gorgeous jumpshot. I would do anything for you. I wish it were possible to freeze time so I would never have to watch you retire. You had a rough childhood, but you never gave up hope. You are even amazing off the court, you're a great husband and father, sometimes I even call you dad. I forvever dread and weep, thinking of the day you will one day retire. I would sacrifice my own life it were the only thing that could put a smile on your beautiful face. You have given me so much joy, and heartbreak over the years. I remember when you first left clevenland and its like my heart got broken into a million pieces. But a tear still fell from my right eye when I watched you win your first ring in miami, because deep down, my glorious king deserved it. I just wanted you to return home. Then allas, you did, my sweet baby boy came home and I rejoiced. 2015 was a hard year for us baby, but in 2016 you made history happen. You came back from 3-1 and I couldn't believe it. I was crying, bawling even, and I heard my glorious king exclaim these words, "CLEVELAND, THIS IS FOR YOU!" Not only have you changed the game of basketball and the world forever, but you've eternally changed my world. And now you're getting older, but still the goat, my goat. I love you pookie bear, my glorious king, Lebron James.☺️♥️🫶🏻
-                </p>
+            <div class="boyoh-container">
+                <!-- Center Column -->
+                <div class="boyoh-center">
+                    <img src="lebon.jpeg" alt="Our Glorious King">
+                    <p class="boyoh-text">
+                        Boy oh boy where do I even begin. Lebron... honey, my pookie bear. I have loved you ever since I first laid eyes on you. The way you drive into the paint and strike fear into your enemies eyes. Your silky smooth touch around the rim, and that gorgeous jumpshot. I would do anything for you. I wish it were possible to freeze time so I would never have to watch you retire. You had a rough childhood, but you never gave up hope. You are even amazing off the court, you're a great husband and father, sometimes I even call you dad. I forvever dread and weep, thinking of the day you will one day retire. I would sacrifice my own life it were the only thing that could put a smile on your beautiful face. You have given me so much joy, and heartbreak over the years. I remember when you first left clevenland and its like my heart got broken into a million pieces. But a tear still fell from my right eye when I watched you win your first ring in miami, because deep down, my glorious king deserved it. I just wanted you to return home. Then allas, you did, my sweet baby boy came home and I rejoiced. 2015 was a hard year for us baby, but in 2016 you made history happen. You came back from 3-1 and I couldn't believe it. I was crying, bawling even, and I heard my glorious king exclaim these words, "CLEVELAND, THIS IS FOR YOU!" Not only have you changed the game of basketball and the world forever, but you've eternally changed my world. And now you're getting older, but still the goat, my goat. I love you pookie bear, my glorious king, Lebron James.☺️♥️🫶🏻
+                    </p>
+                </div>
             </div>
-
             <!-- Right Column -->
             <div class="boyoh-column">
                 <!-- Add your images here -->
-                <img src="placeholder4.jpg" alt="LeBron moment">
-                <img src="placeholder5.jpg" alt="LeBron moment">
-                <img src="placeholder6.jpg" alt="LeBron moment">
+                <img src="leHoney.png" alt="LeBron moment">
+                <img src="leHennesy.jpeg" alt="LeBron moment">
+                <img src="leHappy.png" alt="LeBron moment">
+                <img src="leWhat.png" alt="LeBron moment">
+                <img src="leHuh.png" alt="LeBron moment">
             </div>
         </div>
     </div>
