@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -557,6 +558,12 @@
             window.STRIPE_PUBLISHABLE_KEY = data.stripePublishableKey;
         });
 </script>
+
+<script>
+  import { inject } from '@vercel/speed-insights';
+  inject();
+</script>
+
 </head>
 
 <body>
