@@ -3,3 +3,7 @@ sunshine.mp3
 .env
 
 removeDonation
+
+node_modules/
+
+.DS_Store
